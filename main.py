@@ -133,7 +133,7 @@ def get_password(message):
             global pass_email
             pass_email = password
         else:
-            bot.send_message(message.chat.id, f"Почта {email} не найдена в базе данных. Можешь добавить её тут: @mail_base_umoney_bot")
+            bot.send_message(message.chat.id, f"Почта {email} не найдена в базе данных. Добавь ее с помощью команды /add")
     else:
         bot.send_message(message.chat.id, '❌ Доступ запрещен !❌ ')
 
