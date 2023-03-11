@@ -25,21 +25,20 @@ def get_conn():
 def add_email(message):
     if message.from_user.username in users:
         # Получение почты и пароля от пользователя
-        try:
-            email = message.text.split()[1]
-            password = message.text.split()[2]
-            # Создание соединения и курсора
-            conn = get_conn()
-            cursor = conn.cursor()
-            # Добавление в базу данных
-            cursor.execute("INSERT INTO emails (email, password) VALUES (?, ?)", (email, password))
-            conn.commit()
-            # Закрытие соединения
-            cursor.close()
-            conn.close()
-            bot.send_message(message.chat.id, f"Email {email} с паролем {password} добавлен в базу данных")
-        except:
-            bot.send_message(message.chat.id, "Неправильный формат ввода")
+ 
+        email = message.text.split()[1]
+        password = message.text.split()[2]
+        # Создание соединения и курсора
+        conn = get_conn()
+        cursor = conn.cursor()
+        # Добавление в базу данных
+        cursor.execute("INSERT INTO emails (email, password) VALUES (?, ?)", (email, password))
+        conn.commit()
+        # Закрытие соединения
+        cursor.close()
+        conn.close()
+        bot.send_message(message.chat.id, f"Email {email} с паролем {password} добавлен в базу данных")
+        bot.send_message(message.chat.id, "Неправильный формат ввода")
 
     else:
         bot.send_message(message.chat.id, '❌ Доступ запрещен ! ❌')
