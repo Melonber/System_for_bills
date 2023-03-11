@@ -25,18 +25,22 @@ def get_conn():
 def add_email(message):
     if message.from_user.username in users:
         # Получение почты и пароля от пользователя
-        email = message.text.split()[1]
-        password = message.text.split()[2]
-        # Создание соединения и курсора
-        conn = get_conn()
-        cursor = conn.cursor()
-        # Добавление в базу данных
-        cursor.execute("INSERT INTO emails (email, password) VALUES (?, ?)", (email, password))
-        conn.commit()
-        # Закрытие соединения
-        cursor.close()
-        conn.close()
-        bot.send_message(message.chat.id, f"Email {email} с паролем {password} добавлен в базу данных")
+        try:
+            email = message.text.split()[1]
+            password = message.text.split()[2]
+            # Создание соединения и курсора
+            conn = get_conn()
+            cursor = conn.cursor()
+            # Добавление в базу данных
+            cursor.execute("INSERT INTO emails (email, password) VALUES (?, ?)", (email, password))
+            conn.commit()
+            # Закрытие соединения
+            cursor.close()
+            conn.close()
+            bot.send_message(message.chat.id, f"Email {email} с паролем {password} добавлен в базу данных")
+        except:
+            bot.send_message(message.chat.id, "Неправильный формат ввода")
+
     else:
         bot.send_message(message.chat.id, '❌ Доступ запрещен ! ❌')
 
@@ -44,18 +48,22 @@ def add_email(message):
 @bot.message_handler(commands=['delete'])
 def delete_email(message):
     if message.from_user.username in users:
-        # Получение почты, которую нужно удалить
-        email = message.text.split()[1]
-        # Создание соединения и курсора
-        conn = get_conn()
-        cursor = conn.cursor()
-        # Удаление из базы данных
-        cursor.execute("DELETE FROM emails WHERE email=?", (email,))
-        conn.commit()
-        # Закрытие соединения
-        cursor.close()
-        conn.close()
-        bot.send_message(message.chat.id, f"Email {email} удален из базы данных")
+        try:
+            # Получение почты, которую нужно удалить
+            email = message.text.split()[1]
+            # Создание соединения и курсора
+            conn = get_conn()
+            cursor = conn.cursor()
+            # Удаление из базы данных
+            cursor.execute("DELETE FROM emails WHERE email=?", (email,))
+            conn.commit()
+            # Закрытие соединения
+            cursor.close()
+            conn.close()
+            bot.send_message(message.chat.id, f"Email {email} удален из базы данных")
+        except:
+            bot.send_message(message.chat.id, "Неправильный формат ввода")
+
     else:
         bot.send_message(message.chat.id, '❌ Доступ запрещен ! ❌')
 
@@ -133,7 +141,7 @@ def get_password(message):
             global pass_email
             pass_email = password
         else:
-            bot.send_message(message.chat.id, f"Почта {email} не найдена в базе данных. Добавь ее с помощью команды /add")
+            bot.send_message(message.chat.id, f"Почта {email} не найдена в базе данных. Можешь добавить её тут: @mail_base_umoney_bot")
     else:
         bot.send_message(message.chat.id, '❌ Доступ запрещен !❌ ')
 
