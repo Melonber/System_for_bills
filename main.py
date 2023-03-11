@@ -253,31 +253,35 @@ def func(message):
             bot.send_message(message.chat.id, '❌ Доступ запрещен !❌ ')
 
     if (message.text == "📧"):
+
         if message.from_user.username in users:
+            try:
+                conn = sqlite3.connect('emails.db')
 
-            conn = sqlite3.connect('emails.db')
+                # Создание курсора
+                cursor = conn.cursor()
 
-            # Создание курсора
-            cursor = conn.cursor()
+                # Выполнение запроса
+                cursor.execute("SELECT * FROM emails")
 
-            # Выполнение запроса
-            cursor.execute("SELECT * FROM emails")
+                # Получение результатов запроса
+                rows = cursor.fetchall()
 
-            # Получение результатов запроса
-            rows = cursor.fetchall()
+                # Закрытие курсора и соединения
+                cursor.close()
+                conn.close()
 
-            # Закрытие курсора и соединения
-            cursor.close()
-            conn.close()
+                output = ''
 
-            output = ''
+                for i in range(len(rows)):
+                    output += rows[i][1]
+                output = output.replace(".ru", ".ru ")
+                output = output.replace(" ","\n")
+                mesg = bot.send_message(message.chat.id, output)
+                bot.register_next_step_handler(mesg, get_password)
+            except:
+                bot.send_message(message.chat.id, 'Возникла какая-то ошибка, скорее всего база данных пуста, добавь в нее данные')
 
-            for i in range(len(rows)):
-                output += rows[i][1]
-            output = output.replace(".ru", ".ru ")
-            output = output.replace(" ","\n")
-            mesg = bot.send_message(message.chat.id, output)
-            bot.register_next_step_handler(mesg, get_password)
         else:
             bot.send_message(message.chat.id, '❌ Доступ запрещен !❌ ')
 
