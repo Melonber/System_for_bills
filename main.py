@@ -24,21 +24,22 @@ def get_conn():
 @bot.message_handler(commands=['add'])
 def add_email(message):
     if message.from_user.username in users:
-        # Получение почты и пароля от пользователя
- 
-        email = message.text.split()[1]
-        password = message.text.split()[2]
-        # Создание соединения и курсора
-        conn = get_conn()
-        cursor = conn.cursor()
-        # Добавление в базу данных
-        cursor.execute("INSERT INTO emails (email, password) VALUES (?, ?)", (email, password))
-        conn.commit()
-        # Закрытие соединения
-        cursor.close()
-        conn.close()
-        bot.send_message(message.chat.id, f"Email {email} с паролем {password} добавлен в базу данных")
-        bot.send_message(message.chat.id, "Неправильный формат ввода")
+        try:
+            # Получение почты и пароля от пользователя
+            email = message.text.split()[1]
+            password = message.text.split()[2]
+            # Создание соединения и курсора
+            conn = get_conn()
+            cursor = conn.cursor()
+            # Добавление в базу данных
+            cursor.execute("INSERT INTO emails (email, password) VALUES (?, ?)", (email, password))
+            conn.commit()
+            # Закрытие соединения
+            cursor.close()
+            conn.close()
+            bot.send_message(message.chat.id, f"Email {email} с паролем {password} добавлен в базу данных")
+        except:
+            bot.send_message(message.chat.id, "Неправильный формат ввода")
 
     else:
         bot.send_message(message.chat.id, '❌ Доступ запрещен ! ❌')
@@ -94,56 +95,28 @@ def list_emails(message):
 @bot.message_handler(commands=['use'])
 def get_password(message):
     if message.from_user.username in users:
-        # Получение почты, для которой нужно получить пароль
-        print(message.text.split())
-        email = message.text.split()[1]
-        print(email)
-        # Создание соединения и курсора
-        conn = get_conn()
-        cursor = conn.cursor()
-        # Получение пароля из базы данных
-        cursor.execute("SELECT password FROM emails WHERE email=?", (email,))
-        result = cursor.fetchone()
-        # Закрытие соединения
-        cursor.close()
-        conn.close()
-        if result:
-            password = result[0]
-            bot.send_message(message.chat.id, f"Пароль для почты {email}: {password}")
-        else:
-            bot.send_message(message.chat.id, f"Почта {email} не найдена в базе данных")
+        try:
+            # Получение почты, для которой нужно получить пароль
+            email = message.text.split()[1]
+            # Создание соединения и курсора
+            conn = get_conn()
+            cursor = conn.cursor()
+            # Получение пароля из базы данных
+            cursor.execute("SELECT password FROM emails WHERE email=?", (email,))
+            result = cursor.fetchone()
+            # Закрытие соединения
+            cursor.close()
+            conn.close()
+            if result:
+                password = result[0]
+                bot.send_message(message.chat.id, f"Пароль для почты {email}: {password}")
+            else:
+                bot.send_message(message.chat.id, f"Почта {email} не найдена в базе данных. Ипользуй команду /add")
+        except:
+            bot.send_message(message.chat.id, f"Неизвестная ошибка")
+
     else:
         bot.send_message(message.chat.id, '❌ Доступ запрещен !❌ ')
-
-
-
-
-@bot.message_handler(commands=['use'])
-def get_password(message):
-    if message.from_user.username in users:
-        # Получение почты, для которой нужно получить пароль
-        email = message.text.split()[0]
-        # Создание соединения и курсора
-        conn = get_conn()
-        cursor = conn.cursor()
-        # Получение пароля из базы данных
-        cursor.execute("SELECT password FROM emails WHERE email=?", (email,))
-        result = cursor.fetchone()
-        # Закрытие соединения
-        cursor.close()
-        conn.close()
-        if result:
-            password = result[0]
-            bot.send_message(message.chat.id, f"Почта успешно заменена на {email}")
-            global mail_log
-            mail_log = email
-            global pass_email
-            pass_email = password
-        else:
-            bot.send_message(message.chat.id, f"Почта {email} не найдена в базе данных. Можешь добавить её тут: @mail_base_umoney_bot")
-    else:
-        bot.send_message(message.chat.id, '❌ Доступ запрещен !❌ ')
-
 
 
 # --------------------------------------------------------------------
